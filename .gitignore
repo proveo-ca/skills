@@ -1,5 +1,8 @@
 sample.txt
 
+.env
 .aider*
 .cache
 /cache
+
+.idea*

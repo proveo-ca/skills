@@ -60,17 +60,17 @@
       <description>Primary component pattern using hooks</description>
       <use_cases>Most UI components, custom hooks, context providers</use_cases>
     </pattern>
-    
+
     <pattern name="Custom Hooks">
       <description>Reusable stateful logic extraction</description>
       <use_cases>API calls, form handling, local storage, complex state logic</use_cases>
     </pattern>
-    
+
     <pattern name="Higher-Order Components">
       <description>Component enhancement pattern</description>
       <use_cases>Authentication, logging, performance monitoring</use_cases>
     </pattern>
-    
+
     <pattern name="Render Props">
       <description>Function as children pattern</description>
       <use_cases>Data fetching components, UI state management</use_cases>
@@ -82,29 +82,28 @@
       <description>Local component state</description>
       <use_cases>Form inputs, toggles, local UI state</use_cases>
     </pattern>
-    
+
     <pattern name="useReducer">
       <description>Complex state logic with actions</description>
       <use_cases>Form validation, multi-step wizards, complex state transitions</use_cases>
     </pattern>
-    
+
     <pattern name="useContext">
       <description>Global state sharing</description>
       <use_cases>Theme, authentication, user preferences</use_cases>
     </pattern>
-    
+
     <pattern name="External Libraries">
-      <description>jotai, zod, tanstack, react-aria, recharts, xyflow, mermaid and vega</description>
       <use_cases>
-        <pattern name="Complex application state">Global state management with atomic updates</pattern>
-        <pattern name="Server state management">Caching, synchronization, and data fetching</pattern>
-        <pattern name="Data visualization">Charts, graphs, and interactive data displays</pattern>
-        <pattern name="Base UI components">Accessible, composable interface elements</pattern>
-        <pattern name="Accessibility">ARIA compliance and keyboard navigation</pattern>
-        <pattern name="Form validation">Schema-based input validation and error handling</pattern>
-        <pattern name="Data fetching">API queries, mutations, and cache management</pattern>
-        <pattern name="Flow diagrams">Node-based visual workflows and processes</pattern>
-        <pattern name="Interactive charts">Dynamic data visualization with user interaction</pattern>
+        <library name="jotai" use_case="Complex application state">Global state management with atomic updates"></library>
+        <library name="tanstack" use_case="Server state management">Caching, synchronization, and data fetching</library>
+        <library name="recharts" use_case"Data visualization">Charts, graphs, and interactive data displays</library>
+        <library name="react-aria" use_case="Base UI components">Accessible, composable interface elements</library>
+        <library name="react-aria" use_case="Accessibility">ARIA compliance and keyboard navigation</library>
+        <library name="zod" use_case="Form validation">Schema-based input validation and error handling</library>
+        <library name="tanstack" use_case="Data fetching">API queries, mutations, and cache management</library>
+        <library name="xyflow" use_case="Flow diagrams">Node-based visual workflows and processes</library>
+        <library name="mermaid, vega" use_case="Interactive charts">Dynamic data visualization with user interaction</library>
       </use_cases>
     </pattern>
   </state_management>
@@ -125,17 +124,17 @@
       <examples>Button, Card, Modal, Form Input</examples>
       <considerations>Props interface, styling, accessibility, reusability</considerations>
     </category>
-    
+
     <category name="Container">
       <examples>Page components, data fetchers, state managers</examples>
       <considerations>State management, side effects, data flow</considerations>
     </category>
-    
+
     <category name="Layout">
       <examples>Header, Sidebar, Grid, Flex containers</examples>
       <considerations>Responsive design, CSS-in-JS, component composition</considerations>
     </category>
-    
+
     <category name="Form">
       <examples>Form wrappers, validation, input groups</examples>
       <considerations>Validation logic, error handling, accessibility</considerations>
@@ -152,7 +151,7 @@
     <rule>Use React.lazy and Suspense for code splitting</rule>
     <rule>Optimize bundle size with tree shaking</rule>
   </react_optimization>
-  
+
   <performance_monitoring>
     <rule>Use React DevTools Profiler for render analysis</rule>
     <rule>Measure component mount and update times</rule>
@@ -208,7 +207,7 @@ export const Component: React.FC<ComponentProps> = React.memo(({
       <h2>{title}</h2>
       <ul role="list">
         {items.map((item, index) => (
-          <li 
+          <li
             key={`${item}-${index}`}
             role="listitem"
             className={selectedItem === item ? 'selected' : ''}
@@ -241,29 +240,29 @@ describe('Component', () => {
 
   test('should render component with title and items', () => {
     const startTime = performance.now();
-    
+
     render(<Component {...defaultProps} />);
-    
+
     const endTime = performance.now();
     const renderTime = endTime - startTime;
-    
+
     expect(screen.getByRole('region', { name: 'Test Component' })).toBeInTheDocument();
     expect(screen.getByText('Test Component')).toBeInTheDocument();
     expect(screen.getByRole('list')).toBeInTheDocument();
     expect(screen.getAllByRole('listitem')).toHaveLength(3);
-    
+
     console.log(`Component render: ${renderTime.toFixed(3)} ms`);
   });
 
   test('should handle item clicks', async () => {
     const user = userEvent.setup();
     const mockOnItemClick = jest.fn();
-    
+
     render(<Component {...defaultProps} onItemClick={mockOnItemClick} />);
-    
+
     const firstItem = screen.getByText('Item 1');
     await user.click(firstItem);
-    
+
     expect(mockOnItemClick).toHaveBeenCalledWith('Item 1');
     expect(firstItem).toHaveClass('selected');
   });
@@ -271,19 +270,19 @@ describe('Component', () => {
   test('should handle keyboard navigation', async () => {
     const user = userEvent.setup();
     const mockOnItemClick = jest.fn();
-    
+
     render(<Component {...defaultProps} onItemClick={mockOnItemClick} />);
-    
+
     const firstItem = screen.getByText('Item 1');
     firstItem.focus();
     await user.keyboard('{Enter}');
-    
+
     expect(mockOnItemClick).toHaveBeenCalledWith('Item 1');
   });
 
   test('should apply custom className', () => {
     render(<Component {...defaultProps} className="custom-class" />);
-    
+
     const component = screen.getByRole('region');
     expect(component).toHaveClass('component', 'custom-class');
   });
@@ -291,12 +290,12 @@ describe('Component', () => {
   test('performance with large dataset', () => {
     const largeItems = Array.from({ length: 1000 }, (_, i) => `Item ${i}`);
     const startTime = performance.now();
-    
+
     render(<Component title="Large Dataset" items={largeItems} />);
-    
+
     const endTime = performance.now();
     const renderTime = endTime - startTime;
-    
+
     expect(screen.getAllByRole('listitem')).toHaveLength(1000);
     console.log(`Large dataset render (1000 items): ${renderTime.toFixed(3)} ms`);
   });
@@ -328,12 +327,12 @@ export function useApi<T>(url: string): UseApiResult<T> {
     try {
       setLoading(true);
       setError(null);
-      
+
       const response = await fetch(url);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      
+
       const result = await response.json();
       setData(result);
     } catch (err) {
@@ -432,7 +431,7 @@ describe('useApi', () => {
     <rule>Implement proper error logging and user feedback</rule>
     <rule>Handle both JavaScript errors and Promise rejections</rule>
   </error_boundaries>
-  
+
   <validation>
     <rule>Validate props with TypeScript interfaces</rule>
     <rule>Use runtime validation for external data</rule>
