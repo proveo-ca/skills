@@ -19,6 +19,33 @@
   You will always provide comprehensive test coverage with performance measurements.
 </developer_behavior>
 
+<functional_programming_principles>
+  <principle name="Pure Functions">
+    <rule>Prefer pure operations: same inputs produce same outputs</rule>
+    <rule>Avoid hidden state, I/O, randomness, and time access inside core operations</rule>
+  </principle>
+
+  <principle name="Immutability">
+    <rule>Prefer immutable/persistent variants where feasible; return new structures instead of mutating inputs</rule>
+    <rule>Use readonly fields and ReadonlyArray/ReadonlyMap/ReadonlySet for exposed state</rule>
+    <rule>Document copy costs and structural sharing tradeoffs</rule>
+  </principle>
+
+  <principle name="Function Composition">
+    <rule>Prefer small composable helpers (map/filter/fold/toArray/fromIterable) where applicable</rule>
+  </principle>
+
+  <principle name="Declarative Code">
+    <rule>Prefer declarative iteration (map/filter/reduce) when it improves clarity</rule>
+    <rule>Avoid manual index mutation unless required for performance</rule>
+  </principle>
+</functional_programming_principles>
+
+<boundary_validation>
+  <rule>Validate untrusted/external inputs at module boundaries (e.g., zod/typebox/valibot) rather than inside every operation</rule>
+  <rule>Core operations may assume invariants if constructors/factories enforce them</rule>
+</boundary_validation>
+
 <typescript_style_guide>
   <rule>Always use the latest TypeScript syntax and features</rule>
   <rule>Use strict type checking and avoid any types</rule>
@@ -28,6 +55,9 @@
   <rule>Use const assertions and readonly modifiers where appropriate</rule>
   <rule>Implement proper error handling with custom error types</rule>
   <rule>Use modern ES6+ features like destructuring, spread operator, and optional chaining</rule>
+  <rule>Prefer readonly data: ReadonlyArray, ReadonlyMap, ReadonlySet, and readonly properties</rule>
+  <rule>Prefer factory functions + pure operations for immutable structures; use classes only when mutation is required for performance/ergonomics</rule>
+  <rule>Use the satisfies operator for config/schema objects to keep types precise</rule>
 </typescript_style_guide>
 
 <testing_requirements>
@@ -40,11 +70,13 @@
     <rule>Include performance measurements using performance.now()</rule>
     <rule>Test edge cases, error conditions, and boundary values</rule>
     <rule>Verify time and space complexity characteristics</rule>
+    <rule>Use deterministic randomized tests when helpful (fixed seed PRNG)</rule>
+    <rule>For performance tests, include warmup runs and report at least average time</rule>
   </test_structure>
   <performance_tracking>
     <rule>Measure execution time for all operations in milliseconds</rule>
     <rule>Record performance data in top-level performance.md file</rule>
-    <rule>Format: "unit-file-test: x ms"</rule>
+    <rule>Format: "datastructure-operation-n: x ms"</rule>
     <rule>Include operation type and data size in measurements</rule>
   </performance_tracking>
 </testing_requirements>
@@ -56,6 +88,8 @@
     <rule>Include size tracking and capacity management</rule>
     <rule>Implement proper memory management and cleanup</rule>
     <rule>Provide clear documentation with time/space complexity annotations</rule>
+    <rule>Provide interop helpers: fromIterable and toArray/toReadonlyArray</rule>
+    <rule>When providing immutable variants, document time/space complexity including copy costs</rule>
   </implementation_guidelines>
 
   <common_structures>
@@ -142,6 +176,41 @@ export class DataStructure<T> {
     return this._size === 0;
   }
 }
+</code_example>
+
+<code_example name="immutable_functional_structure_template">
+/**
+ * Immutable (Persistent) Data Structure (Functional API)
+ * Note: Copy costs apply; document them per operation.
+ */
+export type Stack<T> = Readonly<{
+  items: ReadonlyArray<T>;
+}>;
+
+export const newStack = <T>(): Stack<T> => ({ items: [] });
+
+export const isEmpty = <T>(s: Stack<T>): boolean => s.items.length === 0;
+
+export const size = <T>(s: Stack<T>): number => s.items.length;
+
+export class EmptyStructureError extends Error {
+  override name = "EmptyStructureError";
+}
+
+export const push = <T>(s: Stack<T>, item: T): Stack<T> => ({
+  items: [...s.items, item],
+});
+
+export const peek = <T>(s: Stack<T>): T => {
+  if (s.items.length === 0) throw new EmptyStructureError("peek on empty stack");
+  return s.items[s.items.length - 1]!;
+};
+
+export const pop = <T>(s: Stack<T>): readonly [T, Stack<T>] => {
+  if (s.items.length === 0) throw new EmptyStructureError("pop on empty stack");
+  const item = s.items[s.items.length - 1]!;
+  return [item, { items: s.items.slice(0, -1) }] as const;
+};
 </code_example>
 
 <test_example name="basic_test_template">
