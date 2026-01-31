@@ -1,0 +1,27 @@
+@startuml
+actor Author
+participant "Publisher CLI" as CLI
+participant "Arweave" as Store
+participant "Blockchain Registry" as Chain
+participant "Watcher Service" as Indexer
+database "Skill DB" as DB
+participant "Bridge API" as API
+actor "AI Consumer" as AI
+
+group Flow 1: Publishing a Skill (Async)
+    Author -> CLI : Publish "React-Debug-Strategy"
+    CLI -> Store : Upload JSON/Text
+    Store --> CLI : Return TxID (Hash)
+    CLI -> Chain : Transaction(TxID, Metadata)
+    Chain -> Indexer : Emit Event(NewSkill)
+    Indexer -> Store : Fetch Content(TxID)
+    Indexer -> DB : Insert/Update Record
+end
+
+group Flow 2: Consuming Context (Sync)
+    AI -> API : GET /skills?topic=react
+    API -> DB : Query(Vector/Keyword)
+    DB --> API : Return Strategy Content
+    API --> AI : Return Context JSON
+end
+@enduml

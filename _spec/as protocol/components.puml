@@ -1,0 +1,39 @@
+@startuml
+!theme plain
+
+package "Layer 1: Web3 Store (Truth)" {
+    [Arweave Storage] as Arweave
+    [Smart Contract Registry] as Contract
+    note right of Contract
+        Stores:
+        - Skill ID
+        - Author Address
+        - Arweave TxID
+        - Version
+    end note
+}
+
+package "Layer 2: Web2 Indexer (Cache)" {
+    [Watcher Service] as Watcher
+    database "Skill Database" as DB
+    
+    Watcher ..> Contract : Listens for Events
+    Watcher ..> Arweave : Fetches Content
+    Watcher --> DB : Updates Index
+}
+
+package "Layer 3: The Bridge (Access)" {
+    [Bridge API] as API
+    [MCP Adapter] as MCP
+    
+    API --> DB : Queries
+    MCP --> API : Wraps for Local LLMs
+}
+
+[Publisher CLI] --> Arweave : 1. Upload (Pay Once)
+[Publisher CLI] --> Contract : 2. Register
+
+[AI Agent] --> API : REST Request
+[Claude Desktop] --> MCP : MCP Protocol
+
+@enduml

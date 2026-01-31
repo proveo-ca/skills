@@ -1,0 +1,6 @@
+[user]
+	email = aider@docker.local
+	name = Aider Docker
+[safe]
+	directory = /app
+	directory = /app
